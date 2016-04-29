@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from django.conf import settings
 
 

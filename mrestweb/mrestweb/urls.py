@@ -21,4 +21,5 @@ from rest_framework.authtoken import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^security/token', views.obtain_auth_token),
+    url(r'^api/', include('webapp.urls'))
 ]
