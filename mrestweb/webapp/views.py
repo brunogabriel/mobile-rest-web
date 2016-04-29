@@ -27,3 +27,16 @@ def do_login(request):
 			JsonResponse(base_response(False, 'Problem to login, verify your credentials and try again.'))
 	except Exception as e:
 		return JsonResponse(base_response(False, 'Error during login, verify your network connection or try again later.'))
+
+
+@api_view(['POST'])
+def do_create_account(request):
+	try:
+		form = CreateAccountForm(request.POST)
+		if form.is_valid():
+			return JsonResponse(form.handle(request=request))
+		else:
+			return JsonResponse(base_response(False, 'Problem to create account, verify your credentials and try again.'))
+	except Exception as e:
+		return JsonResponse(base_response(False, 'Error during create account, verify your network connection or try again later.'))
+

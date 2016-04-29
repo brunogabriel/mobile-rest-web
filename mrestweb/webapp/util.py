@@ -18,3 +18,10 @@ def obtain_token(username, password):
 		return token
 	except Exception as e:
 		return None
+
+
+def find_user(username, email):
+	current_user = User.objects.filter(username=username).first()
+	if not current_user:
+		current_user = User.objects.filter(email=email).first()
+	return current_user
