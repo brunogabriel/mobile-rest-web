@@ -40,3 +40,15 @@ def do_create_account(request):
 	except Exception as e:
 		return JsonResponse(base_response(False, 'Error during create account, verify your network connection or try again later.'))
 
+@api_view(['POST'])
+def list_teams(request):
+	try:
+		form = TeamsPagination(request.POST, initial={'token': '', 'username': '', 'init': 0, 'threshould': 10})
+		if form.is_valid():
+			return JsonResponse(form.handle(request))
+		else:
+			return JsonResponse(base_response(False, 'Fail listing teams, verify parameters or connection and try again.'))
+	except Exception as e:
+		print str(e)
+		return JsonResponse(base_response(False, 'Error during list teams, verify your network connection or try again later.'))
+

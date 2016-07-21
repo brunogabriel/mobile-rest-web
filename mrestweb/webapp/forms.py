@@ -31,14 +31,11 @@ class LoginForm(forms.Form):
 
 			user = Token.objects.get(key=token).user
 			user_serializer = UserSerializer(user)
-			print 'Cheguei ate aqui'
 			device_user = Device.objects.filter(user=user, platform=platform, device_identifier=device_identifier).first()
-			print 'Cheguei ate aqui 2'
 
 			if device_user:
-				print 'Usuario ja possui um device platform'
+				print 'User already has device platform'
 			else:
-				print 'Criando novo item'
 				device_user = Device(user=user, platform=platform, device_identifier=device_identifier)
 				device_user.save()
 			response = base_response(True, 'Success to login.')
@@ -88,3 +85,37 @@ class CreateAccountForm(forms.Form):
 					pass
 			print str(e)
 			return base_response(False, 'Fail to create account.')
+
+class TeamsPagination(forms.Form):
+	token = forms.CharField(required=True)
+	username = forms.CharField(required=True)
+	init = forms.IntegerField(required=False)
+	threshould = forms.IntegerField(required=False)
+
+	def clean(self):
+		cleaned_data = super(TeamsPagination, self).clean()
+		for key, value in cleaned_data.items():
+			if not value:
+				cleaned_data[key] = self.initial[key]
+		return cleaned_data
+
+	def handle(self, request=None):
+		token = self.cleaned_data['token']
+		username =  self.cleaned_data['username']
+		init = self.cleaned_data['init']
+		threshould = self.cleaned_data['threshould']
+
+		valid_user = Token.objects.filter(key=token, user__username=username).first()
+		if not valid_user:
+				return base_response(False, 'Invalid credentials.')
+
+		teams = Team.objects.all().order_by('id')[init:init+threshould]
+		teams_serializer = TeamSerializer(teams, many=True)
+
+		response = base_response(True, 'Success on list teams')
+		response['teams'] = teams_serializer.data
+
+		return response
+
+
+

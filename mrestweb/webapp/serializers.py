@@ -9,3 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
 		fields = ('id', 'username', 'first_name', 'last_name', 'email', )
+
+class TeamSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Team
+		fields = ('id', 'name', 'conference', 'arena', 'foundation', 'about_history', 'flag',)
