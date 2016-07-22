@@ -15,6 +15,7 @@ class LoginForm(forms.Form):
 	platform = forms.CharField(required=False)
 	device_identifier = forms.CharField(required=False)
 
+
 	def handle(self, request=None):
 		try:
 			username = self.cleaned_data['username']
@@ -22,22 +23,28 @@ class LoginForm(forms.Form):
 			platform = self.cleaned_data['platform']
 			device_identifier = self.cleaned_data['device_identifier']
 
-			if platform not in ['AND', 'IOS', 'WPH'] or not device_identifier:
-				raise Exception('Invalid platform, check your credentials.')
-			
+			create_device = True
+
+			if platform:
+				platform = platform.upper()
+
+			if not platform or platform not in ['AND', 'IOS', 'WPH'] or not device_identifier or len(device_identifier) < 1:
+				create_device = False
+
 			token = obtain_token(username, password)
+
 			if not token:
-				raise Exception('Invalid user credentials.')
+				return base_response(False, 'Fail to login, verify your credentials.')
 
 			user = Token.objects.get(key=token).user
 			user_serializer = UserSerializer(user)
-			device_user = Device.objects.filter(user=user, platform=platform, device_identifier=device_identifier).first()
 
-			if device_user:
-				print 'User already has device platform'
-			else:
-				device_user = Device(user=user, platform=platform, device_identifier=device_identifier)
-				device_user.save()
+			if create_device:
+				device_user = Device.objects.filter(user=user, platform=platform, device_identifier=device_identifier).first()
+				if not device_user:
+					device_user = Device(user=user, platform=platform, device_identifier=device_identifier)
+					device_user.save()
+
 			response = base_response(True, 'Success to login.')
 			response['user'] = user_serializer.data
 			response['user']['token'] = token
