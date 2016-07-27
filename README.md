@@ -71,7 +71,6 @@ At the moment, only **POST** method is used to this API:
 	+ platform type: string, valid values: ios, and and wph
 	+ password (required), type: string
 	+ device_identifier, type: string
-
 ```json
 {
   "message": "Success to login.",
